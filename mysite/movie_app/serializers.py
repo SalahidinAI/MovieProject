@@ -32,7 +32,7 @@ class ActorListSerializer(serializers.ModelSerializer):
         fields = ['actor_name']
 
 
-class GenreSerializer(serializers.ModelSerializer):
+class GenreListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         fields = ['genre_name']
@@ -40,12 +40,17 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class MovieListSerializer(serializers.ModelSerializer):
     year = serializers.DateField(format('%Y'))
-    genre = GenreSerializer(many=True)
+    genre = GenreListSerializer(many=True)
     country = CountrySerializer(many=True)
+    avg_rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
-        fields = ['id', 'movie_name', 'movie_image', 'year', 'genre', 'country', 'status_movie']
+        fields = ['id', 'movie_name', 'movie_image', 'year', 'genre',
+                  'country', 'status_movie', 'avg_rating']
+
+    def get_avg_rating(self, obj):
+        return obj.get_avg_rating()
 
 
 class MovieVideosSerializer(serializers.ModelSerializer):
@@ -74,7 +79,7 @@ class MovieDetailSerializer(serializers.ModelSerializer):
     year = serializers.DateField(format('%d-%m-%Y'))
     director = DirectorListSerializer(many=True)
     actor = ActorListSerializer(many=True)
-    genre = GenreSerializer(many=True)
+    genre = GenreListSerializer(many=True)
     country = CountrySerializer(many=True)
     movie_videos = MovieVideosSerializer(many=True, read_only=True)
     movie_moments = MovieMomentsSerializer(many=True, read_only=True)
@@ -101,9 +106,12 @@ class FavoriteItemSerializer(serializers.ModelSerializer):
 
 
 class HistorySerializer(serializers.ModelSerializer):
+    user = ProfileSimpleSerializer()
+    movie = MovieListSerializer()
+
     class Meta:
         model = History
-        fields = '__all__'
+        fields = ['user', 'movie', 'viewed_at']
 
 
 class CountryDetailSerializer(serializers.ModelSerializer):
@@ -112,3 +120,28 @@ class CountryDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
         fields = ['country_name', 'movies']
+
+
+class DirectorDetailSerializer(serializers.ModelSerializer):
+    director_movies = MovieListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Director
+        fields = ['director_name', 'director_movies']
+
+
+class ActorDetailSerializer(serializers.ModelSerializer):
+    actor_movies = MovieListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Actor
+        fields = ['actor_name', 'actor_movies']
+
+
+class GenreDetailSerializer(serializers.ModelSerializer):
+    genre_movies = MovieListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Genre
+        fields = ['genre_name', 'genre_movies']
+

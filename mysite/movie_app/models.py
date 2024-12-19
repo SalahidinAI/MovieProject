@@ -63,9 +63,9 @@ class Movie(models.Model):
     movie_name = models.CharField(max_length=64)
     year = models.DateField()
     country = models.ManyToManyField(Country, related_name='movies')
-    director = models.ManyToManyField(Director)
-    actor = models.ManyToManyField(Actor)
-    genre = models.ManyToManyField(Genre)
+    director = models.ManyToManyField(Director, related_name='director_movies')
+    actor = models.ManyToManyField(Actor, related_name='actor_movies')
+    genre = models.ManyToManyField(Genre, related_name='genre_movies')
     TYPE_CHOICES = (
         ('144', '144'),
         ('360', '360'),
@@ -82,6 +82,12 @@ class Movie(models.Model):
 
     def __str__(self):
         return f'{self.movie_name}'
+
+    def get_avg_rating(self):
+        rating = self.ratings.all()
+        if rating.exists():
+            return round(sum([i.stars for i in rating if i.stars]) / rating.count(),1)
+        return 0
 
 
 class MovieLanguages(models.Model):

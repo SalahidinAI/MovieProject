@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'movie_app',
     'phonenumber_field',
+    'drf_yasg',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

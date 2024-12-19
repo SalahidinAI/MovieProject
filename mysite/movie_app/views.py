@@ -1,6 +1,8 @@
-from .models import *
 from .serializers import *
 from rest_framework import viewsets, generics
+from .permissions import CheckStatus, CheckUserRating
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 
 class ProfileListView(generics.ListAPIView):
@@ -29,34 +31,55 @@ class CountryDetailAPIView(generics.RetrieveAPIView):
     serializer_class = CountryDetailSerializer
 
 
-class DirectorListViewSet(viewsets.ModelViewSet):
+class DirectorListAPIView(generics.ListAPIView):
     queryset = Director.objects.all()
     serializer_class = DirectorListSerializer
 
 
-class ActorListViewSet(viewsets.ModelViewSet):
+class DirectorDetailAPIView(generics.RetrieveAPIView):
+    queryset = Director.objects.all()
+    serializer_class = DirectorDetailSerializer
+
+
+class ActorListAPIView(generics.ListAPIView):
     queryset = Actor.objects.all()
     serializer_class = ActorListSerializer
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class ActorDetailAPIView(generics.RetrieveAPIView):
+    queryset = Actor.objects.all()
+    serializer_class = ActorDetailSerializer
+
+
+class GenreListAPIView(generics.ListAPIView):
     queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
+    serializer_class = GenreListSerializer
+
+
+class GenreDetailAPIView(generics.RetrieveAPIView):
+    queryset = Genre.objects.all()
+    serializer_class = GenreDetailSerializer
 
 
 class MovieListAPIView(generics.ListAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieListSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['country', 'genre']
+    search_fields = ['movie_name']
+    ordering_fields = ['movie_name', 'year']
 
 
 class MovieDetailAPIView(generics.RetrieveAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieDetailSerializer
+    permission_classes = [CheckStatus]
 
 
 class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
+    permission_classes = [CheckUserRating]
 
 
 class FavoriteViewSet(viewsets.ModelViewSet):
@@ -72,3 +95,6 @@ class FavoriteItemViewSet(viewsets.ModelViewSet):
 class HistoryViewSet(viewsets.ModelViewSet):
     queryset = History.objects.all()
     serializer_class = HistorySerializer
+
+    def get_queryset(self):
+        return History.objects.filter(user=self.request.user)
