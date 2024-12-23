@@ -174,7 +174,7 @@ class DirectorDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Director
-        fields = ['director_name', 'director_movies']
+        fields = ['director_name', 'director_image', 'bio', 'age', 'director_movies']
 
 
 class ActorDetailSerializer(serializers.ModelSerializer):
@@ -182,7 +182,7 @@ class ActorDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Actor
-        fields = ['actor_name', 'actor_movies']
+        fields = ['actor_name', 'actor_image', 'bio', 'age', 'actor_movies']
 
 
 class GenreDetailSerializer(serializers.ModelSerializer):
