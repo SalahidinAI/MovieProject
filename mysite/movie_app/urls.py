@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 from .views import *
-from .views import DirectorListAPIView
+
 
 router = routers.SimpleRouter()
 router.register(r'rating', RatingViewSet, basename='rating_list'),
@@ -9,9 +9,6 @@ router.register(r'favorite', FavoriteViewSet, basename='favorite_list'),
 router.register(r'history', HistoryViewSet, basename='history_list'),
 
 urlpatterns = [
-    path('register/', RegisterView.as_view(), name='register'),
-    path('login/', CustomLoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
     path('', include(router.urls)),
     path('movie/', MovieListAPIView.as_view(), name='movie_list'),
     path('movie/<int:pk>/', MovieDetailAPIView.as_view(), name='movie_detail'),
@@ -25,4 +22,7 @@ urlpatterns = [
     path('actor/<int:pk>/', ActorDetailAPIView.as_view(), name='actor_detail'),
     path('genre/', GenreListAPIView.as_view(), name='genre_list'),
     path('genre/<int:pk>/', GenreDetailAPIView.as_view(), name='genre_detail'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', CustomLoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]

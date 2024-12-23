@@ -192,3 +192,4 @@ class GenreDetailSerializer(serializers.ModelSerializer):
         model = Genre
         fields = ['genre_name', 'genre_movies']
 
+
