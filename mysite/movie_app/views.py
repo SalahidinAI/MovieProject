@@ -48,7 +48,6 @@ class ProfileListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Profile.objects.filter(id=self.request.user.id)
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class ProfileEditView(generics.RetrieveUpdateDestroyAPIView):
@@ -62,50 +61,42 @@ class ProfileEditView(generics.RetrieveUpdateDestroyAPIView):
 class CountryListAPIView(generics.ListAPIView):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class CountryDetailAPIView(generics.RetrieveAPIView):
     queryset = Country.objects.all()
     serializer_class = CountryDetailSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class DirectorListAPIView(generics.ListAPIView):
     queryset = Director.objects.all()
     serializer_class = DirectorListSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class DirectorDetailAPIView(generics.RetrieveAPIView):
     queryset = Director.objects.all()
     serializer_class = DirectorDetailSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class ActorListAPIView(generics.ListAPIView):
     queryset = Actor.objects.all()
     serializer_class = ActorListSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class ActorDetailAPIView(generics.RetrieveAPIView):
     queryset = Actor.objects.all()
     serializer_class = ActorDetailSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class GenreListAPIView(generics.ListAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreListSerializer
-    permission_classes = [permissions.IsAuthenticated]
     pagination_class = GenrePagination
 
 
 class GenreDetailAPIView(generics.RetrieveAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreDetailSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class MovieListAPIView(generics.ListAPIView):
@@ -115,7 +106,6 @@ class MovieListAPIView(generics.ListAPIView):
     filterset_fields = ['country', 'genre']
     search_fields = ['movie_name']
     ordering_fields = ['movie_name', 'year']
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class MovieDetailAPIView(generics.RetrieveAPIView):
@@ -133,19 +123,16 @@ class RatingViewSet(viewsets.ModelViewSet):
 class FavoriteViewSet(viewsets.ModelViewSet):
     queryset = Favorite.objects.all()
     serializer_class = FavoriteSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class FavoriteItemViewSet(viewsets.ModelViewSet):
     queryset = FavoriteMovie.objects.all()
     serializer_class = FavoriteItemSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class HistoryViewSet(viewsets.ModelViewSet):
     queryset = History.objects.all()
     serializer_class = HistorySerializer
-    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return History.objects.filter(user=self.request.user)
