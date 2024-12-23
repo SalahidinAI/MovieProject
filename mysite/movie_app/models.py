@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
+from multiselectfield import MultiSelectField
 
 
 STATUS_CHOICES = (
@@ -73,7 +74,7 @@ class Movie(models.Model):
         ('720', '720'),
         ('1080', '1080'),
     )
-    types = models.CharField(choices=TYPE_CHOICES, max_length=16)
+    types = MultiSelectField(choices=TYPE_CHOICES, max_length=50, max_choices=3)
     movie_time = models.PositiveSmallIntegerField()
     description = models.TextField()
     movie_trailer = models.FileField(upload_to='movie_trailer')

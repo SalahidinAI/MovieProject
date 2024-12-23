@@ -1,5 +1,52 @@
 from rest_framework import serializers
 from .models import *
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile # в начале это строка должна быть User чтобы не возникла ошибка
+        fields = ('username', 'email', 'password')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = Profile.objects.create_user(**validated_data)  # в начале это строка должна быть User. вместо UserProfile. чтобы не возникла ошибка
+        return user
+
+    def to_representation(self, instance): # если эту функцию написать то мы будем получать новый токен при каждом регистрации
+        refresh = RefreshToken.for_user(instance)
+        return {
+            'user': {
+                'username': instance.username,
+                'email': instance.email,
+            },
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        }
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = authenticate(**data)
+        if user and user.is_active:
+            return user
+        raise serializers.ValidationError("Неверные учетные данные")
+
+    def to_representation(self, instance):  # если эту функцию написать то мы будем получать новый токен при каждом логине
+        refresh = RefreshToken.for_user(instance)
+        return {
+            'user': { #  это можно не писать и тогда мы увидем только токены, но для удобства их оставим
+                'username': instance.username,
+                'email': instance.email,
+            },
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        }
 
 
 class ProfileSerializer(serializers.ModelSerializer):

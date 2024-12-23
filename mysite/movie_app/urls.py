@@ -9,6 +9,9 @@ router.register(r'favorite', FavoriteViewSet, basename='favorite_list'),
 router.register(r'history', HistoryViewSet, basename='history_list'),
 
 urlpatterns = [
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', CustomLoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     path('', include(router.urls)),
     path('movie/', MovieListAPIView.as_view(), name='movie_list'),
     path('movie/<int:pk>/', MovieDetailAPIView.as_view(), name='movie_detail'),
