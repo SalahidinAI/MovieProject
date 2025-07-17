@@ -3,19 +3,30 @@ from .models import *
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+import joblib
+import os
+from django.conf import settings
+
+model_path = os.path.join(settings.BASE_DIR, 'model_nb.pkl')
+vector_path = os.path.join(settings.BASE_DIR, 'vector.pkl')
+
+model = joblib.load(model_path)
+vector = joblib.load(vector_path)
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Profile # в начале это строка должна быть User чтобы не возникла ошибка
+        model = Profile  # в начале это строка должна быть User чтобы не возникла ошибка
         fields = ('username', 'email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = Profile.objects.create_user(**validated_data)  # в начале это строка должна быть User. вместо UserProfile. чтобы не возникла ошибка
+        user = Profile.objects.create_user(
+            **validated_data)  # в начале это строка должна быть User. вместо UserProfile. чтобы не возникла ошибка
         return user
 
-    def to_representation(self, instance): # если эту функцию написать то мы будем получать новый токен при каждом регистрации
+    def to_representation(self,
+                          instance):  # если эту функцию написать то мы будем получать новый токен при каждом регистрации
         refresh = RefreshToken.for_user(instance)
         return {
             'user': {
@@ -37,10 +48,11 @@ class LoginSerializer(serializers.Serializer):
             return user
         raise serializers.ValidationError("Неверные учетные данные")
 
-    def to_representation(self, instance):  # если эту функцию написать то мы будем получать новый токен при каждом логине
+    def to_representation(self,
+                          instance):  # если эту функцию написать то мы будем получать новый токен при каждом логине
         refresh = RefreshToken.for_user(instance)
         return {
-            'user': { #  это можно не писать и тогда мы увидем только токены, но для удобства их оставим
+            'user': {  # это можно не писать и тогда мы увидем только токены, но для удобства их оставим
                 'username': instance.username,
                 'email': instance.email,
             },
@@ -115,11 +127,15 @@ class MovieMomentsSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     created_date = serializers.DateTimeField(format('%d-%m-%Y %H:%M'))
     user = ProfileSimpleSerializer()
+    comment_check = serializers.SerializerMethodField()
 
     class Meta:
         model = Rating
-        fields = ['id', 'user', 'text', 'parent',
+        fields = ['id', 'user', 'text', 'comment_check', 'parent',
                   'stars', 'created_date']
+
+    def get_comment_check(self, obj):
+        return model.predict(vector.transform([obj.text]))
 
 
 class MovieDetailSerializer(serializers.ModelSerializer):
@@ -191,5 +207,3 @@ class GenreDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         fields = ['genre_name', 'genre_movies']
-
-

@@ -98,8 +98,8 @@ class MovieLanguages(models.Model):
 
 
 class Moments(models.Model):
-  movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='movie_moments')
-  movie_moments = models.ImageField(upload_to='movie_moments')
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='movie_moments')
+    movie_moments = models.ImageField(upload_to='movie_moments')
 
 
 class Rating(models.Model):
